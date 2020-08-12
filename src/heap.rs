@@ -139,9 +139,12 @@ mod test {
         any_heap_with_rel(size, ParentChildRelation::Greater)
     }
 
-    fn any_heap_with_rel<T>(size: Range<usize>, relation: ParentChildRelation) -> impl Strategy<Value = Heap<T>>
+    fn any_heap_with_rel<T>(
+        size: Range<usize>,
+        relation: ParentChildRelation,
+    ) -> impl Strategy<Value = Heap<T>>
     where
-        T: Arbitrary + Ord + Clone
+        T: Arbitrary + Ord + Clone,
     {
         proptest::collection::vec(any::<T>(), size).prop_map(move |v| {
             let mut min_heap = Heap::new(v.len(), relation);
