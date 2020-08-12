@@ -5,15 +5,26 @@ pub fn binary_search<T: Eq + Ord + Debug>(slice: &[T], value: &T) -> Option<usiz
     let mut hi = slice.len() - 1;
 
     while lo <= hi {
-        let mid = (lo + hi) / 2;
+        let mid = (lo + hi) >> 1;
         let focused = &slice[mid];
 
         if focused == value {
             return Some(mid);
+
         } else if focused < value {
-            lo = mid + 1;
+
+            if mid < slice.len() {
+                lo = mid + 1;
+            } else {
+                return None;
+            }
         } else {
-            hi = mid.wrapping_sub(1);
+
+            if mid > 0 {
+                hi = mid.wrapping_sub(1);
+            } else {
+                return None;
+            }
         }
     }
     None
@@ -27,7 +38,7 @@ mod tests {
 
     proptest! {
         #[test]
-        fn find_correct_index_of_existing_item((i, v) in index_and_sorted_vec::<i32>(1000)) {
+        fn find_correct_index_of_an_existing_item((i, v) in index_and_sorted_vec::<i32>(1000)) {
             let needle = v[i];
             assert_eq!(binary_search(&v, &needle), Some(i));
         }
