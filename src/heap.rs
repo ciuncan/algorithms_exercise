@@ -118,6 +118,25 @@ mod test {
         }
     }
 
+    #[test]
+    fn test_debug() {
+        let mut min_heap = Heap::new_min(5);
+        min_heap.insert_all(&[3, 2, 5, 4, 7]);
+        assert_eq!(
+            format!("{:?}", min_heap),
+            "Heap { elements: [2, 3, 5, 4, 7], size: 5, parent_child_relation: Smaller }"
+                .to_owned()
+        );
+
+        let mut min_heap = Heap::new_max(5);
+        min_heap.insert_all(&[3, 2, 5, 4, 7]);
+        assert_eq!(
+            format!("{:?}", min_heap),
+            "Heap { elements: [7, 5, 3, 2, 4], size: 5, parent_child_relation: Greater }"
+                .to_owned()
+        );
+    }
+
     fn any_heap<T>(size: Range<usize>) -> impl Strategy<Value = Heap<T>>
     where
         T: Arbitrary + Ord + Clone,

@@ -14,20 +14,8 @@ where
 
         match focused.cmp(value) {
             Ordering::Equal => return Some(mid),
-            Ordering::Less => {
-                if mid < slice.len() {
-                    lo = mid + 1;
-                } else {
-                    return None;
-                }
-            }
-            Ordering::Greater => {
-                if mid > 0 {
-                    hi = mid.wrapping_sub(1);
-                } else {
-                    return None;
-                }
-            }
+            Ordering::Less => lo = mid + 1,
+            Ordering::Greater => hi = mid.wrapping_sub(1),
         }
     }
     None
