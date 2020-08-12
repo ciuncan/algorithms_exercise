@@ -1,6 +1,10 @@
+use std::cmp::Ordering;
 use std::fmt::Debug;
 
-pub fn binary_search<T: Eq + Ord + Debug>(slice: &[T], value: &T) -> Option<usize> {
+pub fn binary_search<T>(slice: &[T], value: &T) -> Option<usize>
+where
+    T: Eq + Ord + Debug,
+{
     let mut lo = 0;
     let mut hi = slice.len() - 1;
 
@@ -8,28 +12,26 @@ pub fn binary_search<T: Eq + Ord + Debug>(slice: &[T], value: &T) -> Option<usiz
         let mid = (lo + hi) >> 1;
         let focused = &slice[mid];
 
-        if focused == value {
-            return Some(mid);
-
-        } else if focused < value {
-
-            if mid < slice.len() {
-                lo = mid + 1;
-            } else {
-                return None;
+        match focused.cmp(value) {
+            Ordering::Equal => return Some(mid),
+            Ordering::Less => {
+                if mid < slice.len() {
+                    lo = mid + 1;
+                } else {
+                    return None;
+                }
             }
-        } else {
-
-            if mid > 0 {
-                hi = mid.wrapping_sub(1);
-            } else {
-                return None;
+            Ordering::Greater => {
+                if mid > 0 {
+                    hi = mid.wrapping_sub(1);
+                } else {
+                    return None;
+                }
             }
         }
     }
     None
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -51,19 +53,21 @@ mod tests {
         }
     }
 
-    fn index_and_sorted_vec<T: Arbitrary + Clone + Ord>(max_size: usize) -> impl Strategy<Value = (usize, Vec<T>)> {
-        (1usize..max_size)
-            .prop_flat_map(|size| (0..size)
-                .prop_flat_map(move |index| sorted_vec::<T>(size)
-                    .prop_map(move |vec| (index, vec))))
+    fn index_and_sorted_vec<T>(max_size: usize) -> impl Strategy<Value = (usize, Vec<T>)>
+    where
+        T: Arbitrary + Clone + Ord,
+    {
+        (1usize..max_size).prop_flat_map(|size| {
+            (0..size)
+                .prop_flat_map(move |index| sorted_vec::<T>(size).prop_map(move |vec| (index, vec)))
+        })
     }
 
-    fn sorted_vec<T: Arbitrary + Clone + Ord>(size: usize) -> impl Strategy<Value = Vec<T>> {
+    fn sorted_vec<T>(size: usize) -> impl Strategy<Value = Vec<T>>
+    where
+        T: Arbitrary + Clone + Ord,
+    {
         proptest::collection::btree_set(any::<T>(), size)
-            .prop_map(|set| set.iter()
-                .cloned()
-                .collect::<Vec<_>>()
-            )
+            .prop_map(|set| set.iter().cloned().collect::<Vec<_>>())
     }
-
 }

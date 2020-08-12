@@ -4,5 +4,5 @@ Exercising algorithms with Rust Programming Language while exploring interesting
 
 ![Rust](https://github.com/ciuncan/algorithms_exercise/workflows/Rust/badge.svg)
 
-- [`binary_search`](src/binary_search.rs)
+- [`binary search`](src/binary_search.rs)
 
