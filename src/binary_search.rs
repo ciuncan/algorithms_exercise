@@ -6,7 +6,7 @@ where
     T: Eq + Ord + Debug,
 {
     let mut lo = 0;
-    let mut hi = slice.len() - 1;
+    let mut hi = slice.len().checked_sub(1).unwrap_or_default();
 
     while lo <= hi {
         let mid = (lo + hi) >> 1;
@@ -14,8 +14,10 @@ where
 
         match focused.cmp(value) {
             Ordering::Equal => return Some(mid),
-            Ordering::Less => lo = mid + 1,
-            Ordering::Greater => hi = mid.wrapping_sub(1),
+            Ordering::Less if mid < slice.len() => lo = mid + 1,
+            Ordering::Greater if mid > 0 => hi = mid.wrapping_sub(1),
+            Ordering::Less => return None,
+            Ordering::Greater => return None,
         }
     }
     None
